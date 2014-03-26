@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Context docBase="<%= ::File.join(node[:geoserver][:path], "geoserver.war") %>" path="/" debug="5" reloadable="true" crossContext="true" allowLinking="true">
+<Context docBase="<%= ::File.join(node[:ark][:prefix_root], "geoserver/geoserver.war") %>" debug="5" reloadable="true" crossContext="true" allowLinking="true">
   <Parameter name="GEOSERVER_DATA_DIR" value="<%= node[:geoserver][:data_dir] %>" override="false" />
 </Context>

@@ -27,13 +27,12 @@ end
 node.save unless Chef::Config[:solo]
 
 ark "geoserver" do
-  action :put
-  name ::File.basename(node[:geoserver][:path])
-  path ::File.dirname(node[:geoserver][:path])
+  action :install
   url node[:geoserver][:url]
   version node[:geoserver][:version]
   checksum node[:geoserver][:archive_checksum]
   strip_leading_dir false
+  notifies :restart, "service[tomcat]"
 end
 
 template "#{node[:tomcat][:context_dir]}/geoserver.xml" do
@@ -44,14 +43,29 @@ template "#{node[:tomcat][:context_dir]}/geoserver.xml" do
   notifies :restart, "service[tomcat]"
 end
 
-%w(security/usergroup/default).each do |dir|
-  directory "#{node[:geoserver][:data_dir]}/#{dir}" do
-    recursive true
-    owner node[:tomcat][:user]
-    group node[:tomcat][:group]
-    mode "0755"
-  end
-end 
+remote_file "#{Chef::Config[:file_cache_path]}/geoserver-#{node[:geoserver][:version]}-src.zip" do
+  source node[:geoserver][:source_url]
+  not_if { ::File.exists?(node[:geoserver][:data_dir]) }
+end
+
+# Create the geoserver data directory outside of the version-specific
+# installation so upgrades between versions of geoserver are easier.
+#
+# The data directory appears to need certain boiler-plate data in place to run
+# successfully, so we'll base the data directory off of what's in the source
+# download.
+bash "create_geoserver_data_dir" do
+  cwd Chef::Config[:file_cache_path]
+  user "root"
+  group "root"
+  code <<-EOS
+    unzip geoserver-#{node[:geoserver][:version]}-src.zip -d geoserver-#{node[:geoserver][:version]}-src
+    cp -r #{Chef::Config[:file_cache_path]}/geoserver-#{node[:geoserver][:version]}-src/data/release #{node[:geoserver][:data_dir]}
+    chown -R #{node[:tomcat][:user]}:#{node[:tomcat][:group]} #{node[:geoserver][:data_dir]}
+    rm -r geoserver-#{node[:geoserver][:version]}-src*
+  EOS
+  not_if { ::File.exists?(node[:geoserver][:data_dir]) }
+end
 
 file "#{node[:geoserver][:data_dir]}/security/masterpw.info" do
   action :delete

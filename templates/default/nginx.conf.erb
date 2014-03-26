@@ -4,7 +4,10 @@ upstream geoserver_backend {
 }
 
 server {
-  listen <%= node[:geoserver][:nginx][:port] %>;
+  listen <%= node[:geoserver][:nginx][:port] %> default_server;
+  server_name _;
+
+  rewrite ^/$ /geoserver/ redirect;
 
   location /geoserver {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

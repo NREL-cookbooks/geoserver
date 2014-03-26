@@ -2,7 +2,7 @@ require "base64"
 require "digest"
 require "securerandom"
 
-module Chef::Recipe::GeoServer 
+module Chef::Recipe::GeoServer
   def password_digest(password, salt = nil)
     salt ||= SecureRandom.random_bytes(16)
 

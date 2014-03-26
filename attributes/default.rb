@@ -7,9 +7,8 @@
 # All rights reserved - Do Not Redistribute
 #
 
-default[:geoserver][:path] = "/opt/geoserver"
-default[:geoserver][:version] = "2.4.1"
+default[:geoserver][:version] = "2.5"
 default[:geoserver][:url] = "http://superb-dca2.dl.sourceforge.net/project/geoserver/GeoServer/#{geoserver[:version]}/geoserver-#{geoserver[:version]}-war.zip"
-default[:geoserver][:archive_checksum] = "71761abe68945fcdd8739512d3c91c1e986cdd4679d5915094d5abfb1c119cb5"
-
-default[:geoserver][:data_dir] = "#{geoserver[:path]}/data"
+default[:geoserver][:archive_checksum] = "ec3baa17dd45c9a6a1100a72f74c893456f37f06a2169f07ed4dcbb4b352941b"
+default[:geoserver][:source_url] = "http://superb-dca2.dl.sourceforge.net/project/geoserver/GeoServer/#{geoserver[:version]}/geoserver-#{geoserver[:version]}-src.zip"
+default[:geoserver][:data_dir] = "#{ark[:prefix_root]}/var/data/geoserver"

@@ -8,4 +8,4 @@ version          '0.1.0'
 
 depends "ark"
 depends "tomcat"
-recommends "nginx"
+depends "nginx"
