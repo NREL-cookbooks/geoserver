@@ -59,9 +59,10 @@ bash "create_geoserver_data_dir" do
   user "root"
   group "root"
   code <<-EOS
-    unzip geoserver-#{node[:geoserver][:version]}-src.zip -d geoserver-#{node[:geoserver][:version]}-src
-    cp -r #{Chef::Config[:file_cache_path]}/geoserver-#{node[:geoserver][:version]}-src/data/release #{node[:geoserver][:data_dir]}
-    chown -R #{node[:tomcat][:user]}:#{node[:tomcat][:group]} #{node[:geoserver][:data_dir]}
+    unzip geoserver-#{node[:geoserver][:version]}-src.zip -d geoserver-#{node[:geoserver][:version]}-src && \
+    mkdir -p #{File.dirname(node[:geoserver][:data_dir])} && \
+    cp -r #{Chef::Config[:file_cache_path]}/geoserver-#{node[:geoserver][:version]}-src/data/release #{node[:geoserver][:data_dir]} && \
+    chown -R #{node[:tomcat][:user]}:#{node[:tomcat][:group]} #{node[:geoserver][:data_dir]} && \
     rm -r geoserver-#{node[:geoserver][:version]}-src*
   EOS
   not_if { ::File.exists?(node[:geoserver][:data_dir]) }
