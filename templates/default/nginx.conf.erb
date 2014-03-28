@@ -7,6 +7,12 @@ server {
   listen <%= node[:geoserver][:nginx][:port] %> default_server;
   server_name _;
 
+  <% if node[:geoserver][:nginx][:ssl] %>
+  listen 443 ssl default_server;
+  ssl_certificate <%= node[:geoserver][:nginx][:ssl_certificate] %>;
+  ssl_certificate_key <%= node[:geoserver][:nginx][:ssl_certificate_key] %>;
+  <% end %>
+
   rewrite ^/$ /geoserver/ redirect;
 
   location /geoserver {
