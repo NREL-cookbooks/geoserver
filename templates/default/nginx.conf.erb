@@ -5,12 +5,20 @@ upstream geoserver_backend {
 
 server {
   listen <%= node[:geoserver][:nginx][:port] %> default_server;
+  listen [::]:<%= node[:geoserver][:nginx][:port] %> default_server;
   server_name _;
 
   <% if node[:geoserver][:nginx][:ssl] %>
   listen 443 ssl default_server;
+  listen [::]:443 ssl default_server;
   ssl_certificate <%= node[:geoserver][:nginx][:ssl_certificate] %>;
   ssl_certificate_key <%= node[:geoserver][:nginx][:ssl_certificate_key] %>;
+  <% end %>
+
+  <% if node[:geoserver][:nginx][:force_ssl] %>
+  if ($server_port = 80) {
+    return 302 https://$host$request_uri;
+  }
   <% end %>
 
   rewrite ^/$ /geoserver/ redirect;
