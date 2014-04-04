@@ -9,6 +9,7 @@
 
 include_recipe "ark"
 include_recipe "tomcat"
+include_recipe "geoserver::jai"
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 ::Chef::Recipe.send(:include, Chef::Recipe::GeoServer)
