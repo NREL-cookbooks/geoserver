@@ -8,3 +8,4 @@
 #
 
 default[:geoserver][:nginx][:port] = 80
+default[:geoserver][:nginx][:backend_port] = 8080
