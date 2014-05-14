@@ -23,6 +23,6 @@ end
 remote_file "#{node[:tomcat][:lib_dir]}/#{node[:geoserver][:jndi][:postgresql_jar_filename]}" do
   source "http://jdbc.postgresql.org/download/#{node[:geoserver][:jndi][:postgresql_jar_filename]}"
   checksum node[:geoserver][:jndi][:postgresql_jar_checksum]
-  notifies :run, "ruby_block[geoserver_jndi_cleanup_old_postgres_jars]"
+  notifies :run, "ruby_block[geoserver_jndi_cleanup_old_postgres_jars]", :immediately
   notifies :restart, "service[tomcat]"
 end
