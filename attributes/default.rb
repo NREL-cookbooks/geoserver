@@ -12,3 +12,5 @@ default[:geoserver][:url] = "http://superb-dca2.dl.sourceforge.net/project/geose
 default[:geoserver][:archive_checksum] = "ec3baa17dd45c9a6a1100a72f74c893456f37f06a2169f07ed4dcbb4b352941b"
 default[:geoserver][:source_url] = "http://superb-dca2.dl.sourceforge.net/project/geoserver/GeoServer/#{geoserver[:version]}/geoserver-#{geoserver[:version]}-src.zip"
 default[:geoserver][:data_dir] = "#{ark[:prefix_root]}/var/data/geoserver"
+
+default[:geoserver][:enable_gzip] = true

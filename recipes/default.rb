@@ -42,6 +42,14 @@ template "#{node[:tomcat][:context_dir]}/geoserver.xml" do
   owner node[:tomcat][:user]
   group node[:tomcat][:group]
   mode "0644"
+  notifies :restart, "service[tomcat]", :immediately
+end
+
+template "#{node[:tomcat][:webapp_dir]}/geoserver/WEB-INF/web.xml" do
+  source "web.xml.erb"
+  owner node[:tomcat][:user]
+  group node[:tomcat][:group]
+  mode "0644"
   notifies :restart, "service[tomcat]"
 end
 
