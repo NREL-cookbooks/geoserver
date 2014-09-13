@@ -12,6 +12,9 @@ include_recipe "tomcat"
 include_recipe "geoserver::jai"
 include_recipe "geoserver::jndi"
 
+# For better fonts for rendering in legends.
+package "urw-fonts"
+
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 ::Chef::Recipe.send(:include, Chef::Recipe::GeoServer)
 
