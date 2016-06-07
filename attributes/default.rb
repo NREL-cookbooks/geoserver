@@ -7,10 +7,9 @@
 # All rights reserved - Do Not Redistribute
 #
 
-default[:geoserver][:version] = "2.5"
-default[:geoserver][:url] = "http://superb-dca2.dl.sourceforge.net/project/geoserver/GeoServer/#{geoserver[:version]}/geoserver-#{geoserver[:version]}-war.zip"
-default[:geoserver][:archive_checksum] = "ec3baa17dd45c9a6a1100a72f74c893456f37f06a2169f07ed4dcbb4b352941b"
-default[:geoserver][:source_url] = "http://superb-dca2.dl.sourceforge.net/project/geoserver/GeoServer/#{geoserver[:version]}/geoserver-#{geoserver[:version]}-src.zip"
-default[:geoserver][:data_dir] = "#{ark[:prefix_root]}/var/data/geoserver"
-
-default[:geoserver][:enable_gzip] = true
+default[:geoserver][:version] = "2.9.0"
+default[:geoserver][:url] = "http://pilotfiber.dl.sourceforge.net/project/geoserver/GeoServer/#{geoserver[:version]}/geoserver-#{geoserver[:version]}-war.zip"
+default[:geoserver][:archive_checksum] = "eb28ec2623caf566fc587ad553fad8dc1a403ebb43b8b8c5b390279279e09abb"
+default[:geoserver][:source_url] = "http://pilotfiber.dl.sourceforge.net/project/geoserver/GeoServer/#{geoserver[:version]}/geoserver-#{geoserver[:version]}-src.zip"
+default[:geoserver][:data_dir] = "/opt/geoserver-data"
+default[:geoserver][:jndi_configs] = []

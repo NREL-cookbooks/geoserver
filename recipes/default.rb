@@ -8,57 +8,58 @@
 #
 
 include_recipe "ark"
-include_recipe "tomcat"
-include_recipe "geoserver::jai"
-include_recipe "geoserver::jndi"
+include_recipe "java"
+
+::Chef::Recipe.send(:include, OpenSSLCookbook::RandomPassword)
+
+node.set_unless[:geoserver][:admin_password] = random_password
+node.set_unless[:geoserver][:root_password] = random_password
+
+if(!GeoServer.password_matches(node[:geoserver][:admin_password_digest], node[:geoserver][:admin_password]))
+  node.set[:geoserver][:admin_password_digest] = GeoServer.password_digest(node[:geoserver][:admin_password])
+end
+
+if(!GeoServer.password_matches(node[:geoserver][:root_password_digest], node[:geoserver][:root_password]))
+  node.set[:geoserver][:root_password_digest] = GeoServer.password_digest(node[:geoserver][:root_password])
+end
+
+node.save unless Chef::Config[:solo]
 
 # For better fonts for rendering in legends.
 package "urw-fonts"
 
-::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
-::Chef::Recipe.send(:include, Chef::Recipe::GeoServer)
-
-node.set_unless[:geoserver][:admin_password] = secure_password
-node.set_unless[:geoserver][:root_password] = secure_password
-
-if(!password_matches(node[:geoserver][:admin_password_digest], node[:geoserver][:admin_password]))
-  node.set[:geoserver][:admin_password_digest] = password_digest(node[:geoserver][:admin_password])
+tomcat_install "geoserver" do
+  version "8.0.35"
 end
 
-if(!password_matches(node[:geoserver][:root_password_digest], node[:geoserver][:root_password]))
-  node.set[:geoserver][:root_password_digest] = password_digest(node[:geoserver][:root_password])
+tomcat_service "geoserver" do
+  action [:enable, :start]
 end
 
-node.save unless Chef::Config[:solo]
+tomcat_user = "tomcat_geoserver"
+tomcat_group = "tomcat_geoserver"
+tomcat_dir = "/opt/tomcat_geoserver"
 
 ark "geoserver" do
   action :install
   url node[:geoserver][:url]
   version node[:geoserver][:version]
   checksum node[:geoserver][:archive_checksum]
-  strip_leading_dir false
-  notifies :restart, "service[tomcat]"
+  strip_components 0
+  prefix_root "/opt"
+  prefix_home "/opt"
+  notifies :restart, "tomcat_service[geoserver]"
 end
 
-template "#{node[:tomcat][:context_dir]}/geoserver.xml" do
+template "#{tomcat_dir}/conf/Catalina/localhost/geoserver.xml" do
   source "tomcat_context.xml.erb"
-  owner node[:tomcat][:user]
-  group node[:tomcat][:group]
+  owner tomcat_user
+  group tomcat_group
   mode "0644"
-  notifies :restart, "service[tomcat]", :immediately
-end
-
-template "#{node[:tomcat][:webapp_dir]}/geoserver/WEB-INF/web.xml" do
-  source "web.xml.erb"
-  owner node[:tomcat][:user]
-  group node[:tomcat][:group]
-  mode "0644"
-  notifies :restart, "service[tomcat]"
-end
-
-remote_file "#{Chef::Config[:file_cache_path]}/geoserver-#{node[:geoserver][:version]}-src.zip" do
-  source node[:geoserver][:source_url]
-  not_if { ::File.exists?(node[:geoserver][:data_dir]) }
+  variables({
+    :geoserver_root => "/opt/geoserver",
+  })
+  notifies :restart, "tomcat_service[geoserver]", :immediately
 end
 
 # Create the geoserver data directory outside of the version-specific
@@ -72,13 +73,11 @@ bash "create_geoserver_data_dir" do
   user "root"
   group "root"
   code <<-EOS
-    unzip geoserver-#{node[:geoserver][:version]}-src.zip -d geoserver-#{node[:geoserver][:version]}-src && \
-    mkdir -p #{File.dirname(node[:geoserver][:data_dir])} && \
-    cp -r #{Chef::Config[:file_cache_path]}/geoserver-#{node[:geoserver][:version]}-src/data/release #{node[:geoserver][:data_dir]} && \
-    chown -R #{node[:tomcat][:user]}:#{node[:tomcat][:group]} #{node[:geoserver][:data_dir]} && \
-    rm -r geoserver-#{node[:geoserver][:version]}-src*
+    mkdir -p #{File.dirname(node[:geoserver][:data_dir])}
+    rsync -av #{tomcat_dir}/webapps/geoserver/data/ #{node[:geoserver][:data_dir]}/
+    chown -R #{tomcat_user}:#{tomcat_group} #{node[:geoserver][:data_dir]}
   EOS
-  not_if { ::File.exists?(node[:geoserver][:data_dir]) }
+  not_if { ::File.exists?(File.join(node[:geoserver][:data_dir], "workspaces")) }
 end
 
 file "#{node[:geoserver][:data_dir]}/security/masterpw.info" do
@@ -87,13 +86,13 @@ end
 
 file "#{node[:geoserver][:data_dir]}/security/masterpw.digest" do
   content "digest1:#{node[:geoserver][:root_password_digest]}"
-  notifies :restart, "service[tomcat]"
+  notifies :restart, "tomcat_service[geoserver]"
 end
 
 template "#{node[:geoserver][:data_dir]}/security/usergroup/default/users.xml" do
   source "users.xml.erb"
-  owner node[:tomcat][:user]
-  group node[:tomcat][:group]
+  owner tomcat_user
+  group tomcat_group
   mode "0644"
-  notifies :restart, "service[tomcat]"
+  notifies :restart, "tomcat_service[geoserver]"
 end
