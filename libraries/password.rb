@@ -14,7 +14,7 @@ module Chef::Recipe::GeoServer
     Base64.strict_encode64("#{salt}#{hash}")
   end
 
-  def self.password_matches(digest, password)
+  def self.password_matches?(digest, password)
     return false unless(digest)
 
     data = Base64.decode64(digest)

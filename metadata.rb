@@ -9,4 +9,5 @@ version          '0.2.0'
 depends "ark", "~> 1.0"
 depends "java", "~> 1.0"
 depends "openssl", "~> 4.0"
-depends "tomcat", "~> 2.0"
+depends "tomcat", "~> 0.17.3"
+depends "line"
