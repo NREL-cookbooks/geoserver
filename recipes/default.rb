@@ -101,7 +101,6 @@ replace_or_add "geoserver_set_admin_password" do
   notifies :restart, "service[#{node[:tomcat][:base_instance]}]", :immediately
 end
 
-
 # Update the master/root password.
 #
 # Use the API to do this, since it seems tricky to set this in the multiple

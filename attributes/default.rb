@@ -12,4 +12,3 @@ default[:geoserver][:url] = "http://pilotfiber.dl.sourceforge.net/project/geoser
 default[:geoserver][:archive_checksum] = "eb28ec2623caf566fc587ad553fad8dc1a403ebb43b8b8c5b390279279e09abb"
 default[:geoserver][:source_url] = "https://github.com/geoserver/geoserver/archive/#{geoserver[:version]}.tar.gz"
 default[:geoserver][:data_dir] = "/opt/geoserver-data"
-default[:geoserver][:jndi_configs] = []

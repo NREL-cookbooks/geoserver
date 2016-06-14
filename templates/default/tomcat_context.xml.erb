@@ -2,7 +2,7 @@
 <Context docBase="<%= ::File.join(@geoserver_root, "geoserver.war") %>" debug="5" reloadable="true" crossContext="true" allowLinking="true">
   <Parameter name="GEOSERVER_DATA_DIR" value="<%= node[:geoserver][:data_dir] %>" override="false" />
 
-  <% node[:geoserver][:jndi_configs].each do |config| %>
+  <% node[:geoserver][:jndi][:configs].each do |config| %>
     <Resource <%= config.map { |key, value| "#{key}=#{value.inspect}" }.join(" ") %> />
   <% end %>
 </Context>
